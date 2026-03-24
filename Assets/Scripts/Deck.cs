@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Deck : MonoBehaviour
@@ -15,6 +16,16 @@ public class Deck : MonoBehaviour
     public int[] values = new int[52];
     int cardIndex = 0;
 
+    //Nuestras variables
+    int playerPoints;
+    int dealerPoints;
+
+    int valorRandom;
+    
+
+    bool primerTurno = true;
+
+
     private void Awake()
     {
         InitCardValues();
@@ -23,6 +34,9 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
+        playerPoints = player.GetComponent<CardHand>().points;
+        dealerPoints = dealer.GetComponent<CardHand>().points;
+
         ShuffleCards();
         StartGame();
     }
@@ -51,6 +65,15 @@ public class Deck : MonoBehaviour
          * El método Random.Range(0,n), devuelve un valor entre 0 y n-1
          * Si lo necesitas, puedes definir nuevos arrays.
          */
+        for (int i = 0; i < faces.Length; i++)
+        {
+            valorRandom = Random.Range(0, faces.Length);
+
+            Sprite auxFace = faces[i];
+            faces[i] = faces[valorRandom];
+            faces[valorRandom] = auxFace;
+
+        }
     }
 
     void StartGame()
@@ -99,6 +122,11 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
+        if(primerTurno)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            primerTurno = false;
+        }
 
         //Repartimos carta al jugador
         PushPlayer();
@@ -106,6 +134,18 @@ public class Deck : MonoBehaviour
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
          */
+        if(playerPoints > 21)
+        {
+            finalMessage.text = "¡Has perdido chaval!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
+        else if(playerPoints == 21)
+        {
+            finalMessage.text = "¡Has ganado chaval!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
 
     }
 
