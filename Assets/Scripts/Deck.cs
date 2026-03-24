@@ -114,11 +114,18 @@ public class Deck : MonoBehaviour
     {
         /*TODO:
          * Calcular las probabilidades de:
-         * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
          * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
          */
+        int cartasRestantes = faces.Length - cardIndex;
+        int casosFavorables = 0;
 
+        for(int i=cardIndex; i<cartasRestantes; i++)
+        {
+            //Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
+            if (dealerPoints + values[cardIndex + i] > playerPoints && dealerPoints + values[cardIndex + i] <= 21)
+                casosFavorables++;
+        }
 
     }
 
