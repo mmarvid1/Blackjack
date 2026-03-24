@@ -85,6 +85,28 @@ public class Deck : MonoBehaviour
             /*TODO:
              * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
              */
+
+            if (dealerPoints.Equals(21) && playerPoints.Equals(21))
+            {
+                finalMessage.text = "¡Empate chaval!";
+                hitButton.interactable = false;
+                stickButton.interactable = false;
+            }
+            else if (dealerPoints.Equals(21)) {
+
+                finalMessage.text = "¡Has perdido chaval!";
+                hitButton.interactable = false;
+                stickButton.interactable = false;
+            }
+            else if(playerPoints.Equals(21))
+            {
+                finalMessage.text = "¡Has ganado chaval!";
+                hitButton.interactable = false;
+                stickButton.interactable = false;
+            }
+
+            hitButton.interactable = false;
+            stickButton.interactable = false;
         }
     }
 
@@ -96,6 +118,8 @@ public class Deck : MonoBehaviour
          * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
          */
+
+
     }
 
     void PushDealer()
@@ -122,11 +146,11 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
-        if(primerTurno)
+        /*if(primerTurno)
         {
             dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
             primerTurno = false;
-        }
+        }*/
 
         //Repartimos carta al jugador
         PushPlayer();
@@ -140,7 +164,7 @@ public class Deck : MonoBehaviour
             hitButton.interactable = false;
             stickButton.interactable = false;
         }
-        else if(playerPoints == 21)
+        else if(playerPoints.Equals(21))
         {
             finalMessage.text = "¡Has ganado chaval!";
             hitButton.interactable = false;
@@ -154,13 +178,31 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
+        if(primerTurno)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            primerTurno = false;
+        }
 
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
          */
+        while(dealerPoints <= 16)
+        {
+            PushDealer();
+            dealerPoints = dealer.GetComponent<CardHand>().points;
+        }
 
+        //Cuando el dealer se planta, comprobamos quién ha ganado
+        if (dealerPoints > 21) finalMessage.text = "¡Has ganado chaval!";
+        else if (dealerPoints > playerPoints) finalMessage.text = "¡Has perdido chaval!";
+        else if (dealerPoints < playerPoints) finalMessage.text = "¡Has ganado chaval!";
+        else finalMessage.text = "¡Empate chaval!";
+
+        hitButton.interactable = false;
+        stickButton.interactable = false;
     }
 
     public void PlayAgain()
