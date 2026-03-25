@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic; 
 
 public class Deck : MonoBehaviour
 {
@@ -31,11 +33,23 @@ public class Deck : MonoBehaviour
 
     bool primerTurno = true;
 
+    //Variables para apostar
+    public int bancaPlayer = 1000;
+    public int apuestaPlayer = 0;
+    public Text textBanca;
+
+    public Dropdown apuestaDropdown;
+
 
     private void Awake()
     {
         InitCardValues();
 
+        apuestaDropdown.ClearOptions();
+        List<string> opciones = new List<string> { "10", "20", "50", "100" };
+        apuestaDropdown.AddOptions(opciones);
+
+        apuestaDropdown.onValueChanged.AddListener(delegate { SeleccionarApuestaDropdown(); });
     }
 
     private void Start()
@@ -106,6 +120,7 @@ public class Deck : MonoBehaviour
              */
         textPlayerPoints.text = "Puntos Jugador: " + playerPoints;
         textDealerPoints.text = "Puntos Dealer: ";
+        textBanca.text = $"Banca: {bancaPlayer}€";
 
 
         if (dealerPoints.Equals(21) && playerPoints.Equals(21))
@@ -216,6 +231,7 @@ public class Deck : MonoBehaviour
             dealer.GetComponent<CardHand>().InitialToggle();
             hitButton.interactable = false;
             stickButton.interactable = false;
+            ActualizarBanca(false);
         }
         else if(playerPoints.Equals(21))
         {
@@ -223,6 +239,7 @@ public class Deck : MonoBehaviour
             dealer.GetComponent<CardHand>().InitialToggle();
             hitButton.interactable = false;
             stickButton.interactable = false;
+            ActualizarBanca(true);
         }
 
     }
@@ -256,10 +273,21 @@ public class Deck : MonoBehaviour
         }
 
         //Cuando el dealer se planta, comprobamos quién ha ganado
-        if (dealerPoints > 21) finalMessage.text = "¡Has ganado chaval!";
-        else if (dealerPoints > playerPoints) finalMessage.text = "¡Has perdido chaval!";
-        else if (dealerPoints < playerPoints) finalMessage.text = "¡Has ganado chaval!";
-        else finalMessage.text = "¡Empate chaval!";
+        if (dealerPoints > 21 || playerPoints > dealerPoints)
+        {
+            finalMessage.text = "¡Has ganado chaval!";
+            ActualizarBanca(true);
+        }
+        else if (dealerPoints > playerPoints)
+        {
+            finalMessage.text = "¡Has perdido chaval!";
+            ActualizarBanca(false);
+        }
+        else
+        {
+            finalMessage.text = "¡Empate chaval!";
+            textBanca.text = $"Banca: {bancaPlayer}€";
+        }
 
         hitButton.interactable = false;
         stickButton.interactable = false;
@@ -281,4 +309,35 @@ public class Deck : MonoBehaviour
         StartGame();
     }
 
+    public void SeleccionarApuestaDropdown()
+    {
+        string opcion = apuestaDropdown.options[apuestaDropdown.value].text;
+        int valor = int.Parse(opcion);
+
+
+        if (valor <= bancaPlayer)
+        {
+            apuestaPlayer = valor;
+            finalMessage.text = $"Has apostado {apuestaPlayer}€";
+        }
+        else
+        {
+            finalMessage.text = $"No tienes suficiente banca para {valor}€";
+            apuestaPlayer = 0;
+        }
+    }
+
+    void ActualizarBanca(bool playerGana)
+    {
+        if (playerGana)
+        {
+            bancaPlayer+= apuestaPlayer*2;
+        }
+        else
+        {
+            bancaPlayer-= apuestaPlayer;
+        }
+
+        textBanca.text = $"Banca: {bancaPlayer}€";
+    }
 }
