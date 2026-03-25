@@ -39,12 +39,6 @@ public class Deck : MonoBehaviour
         StartGame();
     }
 
-    private void Update()
-    {
-        playerPoints = player.GetComponent<CardHand>().points;
-        dealerPoints = dealer.GetComponent<CardHand>().points;
-    }
-
 
     private void InitCardValues()
     {
@@ -93,6 +87,9 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
+
+            playerPoints = player.GetComponent<CardHand>().points;
+            dealerPoints = dealer.GetComponent<CardHand>().points;
             /*TODO:
              * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
              */
@@ -116,8 +113,6 @@ public class Deck : MonoBehaviour
                 stickButton.interactable = false;
             }
 
-            hitButton.interactable = false;
-            stickButton.interactable = false;
         }
     }
 
@@ -126,19 +121,22 @@ public class Deck : MonoBehaviour
         /*TODO:
          * Calcular las probabilidades de:*/
         int cartasRestantes = faces.Length - cardIndex;
-        int casosFavorables = 0;
 
-        for(int i=cardIndex; i<cartasRestantes; i++)
+        int casosFavorablesDealer = 0;
+        int casosFavorables17_21 = 0;
+        int casosFavorables21mas = 0;
+
+        for (int i=cardIndex; i<52; i++)
         {
             //Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
-            if (dealerPoints + values[cardIndex + i] > playerPoints && dealerPoints + values[cardIndex + i] <= 21)
-                casosFavorables++;
+            if (dealerPoints + values[i] > playerPoints && dealerPoints + values[i] <= 21)
+                casosFavorablesDealer++;
             //Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
-            if (playerPoints + values[cardIndex + i] >= 17 && playerPoints + values[cardIndex + i] <= 21)
-                casosFavorables++;
+            if (playerPoints + values[i] >= 17 && playerPoints + values[i] <= 21)
+                casosFavorables17_21++;
             //Probabilidad de que el jugador obtenga más de 21 si pide una carta
-            if (playerPoints + values[cardIndex + i] > 21)
-                casosFavorables++;
+            if (playerPoints + values[i] > 21)
+                casosFavorables21mas++;
         }
 
     }
@@ -176,10 +174,11 @@ public class Deck : MonoBehaviour
         //Repartimos carta al jugador
         PushPlayer();
 
+        playerPoints = player.GetComponent<CardHand>().points;
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
          */
-        if(playerPoints > 21)
+        if (playerPoints > 21)
         {
             finalMessage.text = "¡Has perdido chaval!";
             hitButton.interactable = false;
@@ -201,7 +200,8 @@ public class Deck : MonoBehaviour
          */
         if(primerTurno)
         {
-            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            //dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            dealer.GetComponent<CardHand>().InitialToggle();
             primerTurno = false;
         }
 
