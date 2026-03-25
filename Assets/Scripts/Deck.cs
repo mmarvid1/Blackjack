@@ -20,6 +20,9 @@ public class Deck : MonoBehaviour
     int playerPoints;
     int dealerPoints;
 
+    public Text textPlayerPoints;
+    public Text textDealerPoints;
+
     CardHand playerHand;
     CardHand dealerHand;
 
@@ -101,6 +104,9 @@ public class Deck : MonoBehaviour
         /*TODO:
              * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
              */
+        textPlayerPoints.text = "Puntos Jugador: " + playerPoints;
+        textDealerPoints.text = "Puntos Dealer: ";
+
 
         if (dealerPoints.Equals(21) && playerPoints.Equals(21))
         {
@@ -121,6 +127,8 @@ public class Deck : MonoBehaviour
             hitButton.interactable = false;
             stickButton.interactable = false;
         }
+
+        
     }
 
     private void CalculateProbabilities()
@@ -196,18 +204,23 @@ public class Deck : MonoBehaviour
         PushPlayer();
 
         playerPoints = playerHand.points;
+
+        textPlayerPoints.text = "Puntos Jugador: " + playerPoints;
+        
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
          */
         if (playerPoints > 21)
         {
             finalMessage.text = "¡Has perdido chaval!";
+            dealer.GetComponent<CardHand>().InitialToggle();
             hitButton.interactable = false;
             stickButton.interactable = false;
         }
         else if(playerPoints.Equals(21))
         {
             finalMessage.text = "¡Has ganado chaval!";
+            dealer.GetComponent<CardHand>().InitialToggle();
             hitButton.interactable = false;
             stickButton.interactable = false;
         }
@@ -234,6 +247,8 @@ public class Deck : MonoBehaviour
         dealerPoints = dealerHand.points;
         playerPoints = playerHand.points;
 
+
+
         while (dealerPoints <= 16)
         {
             PushDealer();
@@ -248,6 +263,7 @@ public class Deck : MonoBehaviour
 
         hitButton.interactable = false;
         stickButton.interactable = false;
+        textDealerPoints.text = "Puntos Dealer: " + dealerPoints;
     }
 
     public void PlayAgain()
@@ -255,6 +271,8 @@ public class Deck : MonoBehaviour
         hitButton.interactable = true;
         stickButton.interactable = true;
         finalMessage.text = "";
+        textDealerPoints.text = "";
+        textPlayerPoints.text = "";
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();
         cardIndex = 0;
