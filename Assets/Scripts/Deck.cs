@@ -34,12 +34,17 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
-        playerPoints = player.GetComponent<CardHand>().points;
-        dealerPoints = dealer.GetComponent<CardHand>().points;
 
         ShuffleCards();
         StartGame();
     }
+
+    private void Update()
+    {
+        playerPoints = player.GetComponent<CardHand>().points;
+        dealerPoints = dealer.GetComponent<CardHand>().points;
+    }
+
 
     private void InitCardValues()
     {
@@ -69,9 +74,15 @@ public class Deck : MonoBehaviour
         {
             valorRandom = Random.Range(0, faces.Length);
 
+            //Baraja las imágenes
             Sprite auxFace = faces[i];
             faces[i] = faces[valorRandom];
             faces[valorRandom] = auxFace;
+
+            //Baraja los valores
+            int auxValue = values[i];
+            values[i] = values[valorRandom];
+            values[valorRandom] = auxValue;
 
         }
     }
