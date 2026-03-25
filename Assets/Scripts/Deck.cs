@@ -20,6 +20,9 @@ public class Deck : MonoBehaviour
     int playerPoints;
     int dealerPoints;
 
+    CardHand playerHand;
+    CardHand dealerHand;
+
     int valorRandom;
     
 
@@ -34,9 +37,12 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
+        playerHand = player.GetComponent<CardHand>();
+        dealerHand = dealer.GetComponent<CardHand>();
 
         ShuffleCards();
         StartGame();
+        
     }
 
 
@@ -66,7 +72,7 @@ public class Deck : MonoBehaviour
          */
         for (int i = 0; i < faces.Length; i++)
         {
-            valorRandom = Random.Range(0, faces.Length);
+            valorRandom = Random.Range(i, faces.Length);
 
             //Baraja las imágenes
             Sprite auxFace = faces[i];
@@ -88,31 +94,32 @@ public class Deck : MonoBehaviour
             PushPlayer();
             PushDealer();
 
-            playerPoints = player.GetComponent<CardHand>().points;
-            dealerPoints = dealer.GetComponent<CardHand>().points;
-            /*TODO:
+            playerPoints = playerHand.points;
+            dealerPoints = dealerHand.points;
+
+        }
+        /*TODO:
              * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
              */
 
-            if (dealerPoints.Equals(21) && playerPoints.Equals(21))
-            {
-                finalMessage.text = "¡Empate chaval!";
-                hitButton.interactable = false;
-                stickButton.interactable = false;
-            }
-            else if (dealerPoints.Equals(21)) {
+        if (dealerPoints.Equals(21) && playerPoints.Equals(21))
+        {
+            finalMessage.text = "¡Empate chaval!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
+        else if (dealerPoints.Equals(21))
+        {
 
-                finalMessage.text = "¡Has perdido chaval!";
-                hitButton.interactable = false;
-                stickButton.interactable = false;
-            }
-            else if(playerPoints.Equals(21))
-            {
-                finalMessage.text = "¡Has ganado chaval!";
-                hitButton.interactable = false;
-                stickButton.interactable = false;
-            }
-
+            finalMessage.text = "¡Has perdido chaval!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
+        else if (playerPoints.Equals(21))
+        {
+            finalMessage.text = "¡Has ganado chaval!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
         }
     }
 
@@ -121,13 +128,18 @@ public class Deck : MonoBehaviour
         /*TODO:
          * Calcular las probabilidades de:*/
         int cartasRestantes = faces.Length - cardIndex;
+        if (cartasRestantes <= 0) return;
 
         int casosFavorablesDealer = 0;
         int casosFavorables17_21 = 0;
         int casosFavorables21mas = 0;
 
+        dealerPoints = dealerHand.points;
+        playerPoints = playerHand.points;
+
         for (int i=cardIndex; i<52; i++)
         {
+           
             //Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
             if (dealerPoints + values[i] > playerPoints && dealerPoints + values[i] <= 21)
                 casosFavorablesDealer++;
@@ -139,6 +151,14 @@ public class Deck : MonoBehaviour
                 casosFavorables21mas++;
         }
 
+        float probDealer = (float)casosFavorablesDealer / cartasRestantes * 100;
+        float prob17_21 = (float)casosFavorables17_21 / cartasRestantes * 100 ;
+        float prob21mas = (float)casosFavorables21mas / cartasRestantes * 100;
+
+        probMessage.text = "Probabilidades:\nDealer gana: " + probDealer.ToString("F1") + "%\n" +
+            "Jugador obtiene entre 17 y 21: " + prob17_21.ToString("F1") + "%\n" +
+            "Jugador obtiene más de 21: " + prob21mas.ToString("F1") + "%";
+
     }
 
     void PushDealer()
@@ -146,7 +166,7 @@ public class Deck : MonoBehaviour
         /*TODO:
          * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
          */
-        dealer.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]);
+        dealerHand.Push(faces[cardIndex], values[cardIndex]);
         cardIndex++;
     }
 
@@ -155,7 +175,7 @@ public class Deck : MonoBehaviour
         /*TODO:
          * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
          */
-        player.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]/*,cardCopy*/);
+        playerHand.Push(faces[cardIndex], values[cardIndex]/*,cardCopy*/);
         cardIndex++;
         CalculateProbabilities();
     }
@@ -165,16 +185,17 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
-        /*if(primerTurno)
+        if(primerTurno)
         {
-            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            //dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            dealer.GetComponent<CardHand>().InitialToggle();
             primerTurno = false;
-        }*/
+        }
 
         //Repartimos carta al jugador
         PushPlayer();
 
-        playerPoints = player.GetComponent<CardHand>().points;
+        playerPoints = playerHand.points;
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
          */
@@ -210,10 +231,13 @@ public class Deck : MonoBehaviour
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
          */
-        while(dealerPoints <= 16)
+        dealerPoints = dealerHand.points;
+        playerPoints = playerHand.points;
+
+        while (dealerPoints <= 16)
         {
             PushDealer();
-            dealerPoints = dealer.GetComponent<CardHand>().points;
+            dealerPoints = dealerHand.points;
         }
 
         //Cuando el dealer se planta, comprobamos quién ha ganado
@@ -234,6 +258,7 @@ public class Deck : MonoBehaviour
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();
         cardIndex = 0;
+        primerTurno = true;
         ShuffleCards();
         StartGame();
     }
