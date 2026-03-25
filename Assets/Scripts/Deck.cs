@@ -185,12 +185,12 @@ public class Deck : MonoBehaviour
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
          */
-        if(primerTurno)
+        /*if(primerTurno)
         {
             //dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
             dealer.GetComponent<CardHand>().InitialToggle();
             primerTurno = false;
-        }
+        }*/
 
         //Repartimos carta al jugador
         PushPlayer();
