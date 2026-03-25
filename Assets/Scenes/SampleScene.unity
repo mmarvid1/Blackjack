@@ -190,7 +190,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: Apuesta
 --- !u!222 &878045
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -483,6 +483,7 @@ MonoBehaviour:
   bancaPlayer: 1000
   apuestaPlayer: 0
   textBanca: {fileID: 1610474232}
+  textApuesta: {fileID: 1081091748}
   apuestaDropdown: {fileID: 1492994200}
 --- !u!1 &276339162
 GameObject:

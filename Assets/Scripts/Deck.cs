@@ -37,6 +37,7 @@ public class Deck : MonoBehaviour
     public int bancaPlayer = 1000;
     public int apuestaPlayer = 0;
     public Text textBanca;
+    public Text textApuesta;
 
     public Dropdown apuestaDropdown;
 
@@ -301,6 +302,7 @@ public class Deck : MonoBehaviour
         finalMessage.text = "";
         textDealerPoints.text = "";
         textPlayerPoints.text = "";
+        textApuesta.text = "Apuesta";
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();
         cardIndex = 0;
@@ -314,6 +316,7 @@ public class Deck : MonoBehaviour
         string opcion = apuestaDropdown.options[apuestaDropdown.value].text;
         int valor = int.Parse(opcion);
 
+        textApuesta.text = $"{valor}€";
 
         if (valor <= bancaPlayer)
         {
