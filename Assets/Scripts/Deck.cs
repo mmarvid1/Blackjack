@@ -41,6 +41,8 @@ public class Deck : MonoBehaviour
 
     public Dropdown apuestaDropdown;
 
+    //Variable confeti al ganar
+    public ParticleSystem confetti;
 
     private void Awake()
     {
@@ -142,6 +144,7 @@ public class Deck : MonoBehaviour
             finalMessage.text = "¡Has ganado chaval!";
             hitButton.interactable = false;
             stickButton.interactable = false;
+            PlayConfetti();
         }
 
         
@@ -241,6 +244,7 @@ public class Deck : MonoBehaviour
             hitButton.interactable = false;
             stickButton.interactable = false;
             ActualizarBanca(true);
+            PlayConfetti();
         }
 
     }
@@ -278,6 +282,7 @@ public class Deck : MonoBehaviour
         {
             finalMessage.text = "¡Has ganado chaval!";
             ActualizarBanca(true);
+            PlayConfetti();
         }
         else if (dealerPoints > playerPoints)
         {
@@ -309,6 +314,7 @@ public class Deck : MonoBehaviour
         primerTurno = true;
         ShuffleCards();
         StartGame();
+        confetti.Stop();
     }
 
     public void SeleccionarApuestaDropdown()
@@ -342,5 +348,14 @@ public class Deck : MonoBehaviour
         }
 
         textBanca.text = $"Banca: {bancaPlayer}€";
+    }
+
+    //método confeti
+    void PlayConfetti()
+    {
+        if (confetti != null)
+        {
+            confetti.Play();
+        }
     }
 }
